@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile  {{ profile_user.username }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:500px;">
+    <div class="vuln-note">
+        <strong>[V2] IDOR + [V5] No input validation</strong>
+        Any authenticated user can submit this form for any user_id.
+        No CSRF token is present. Bio has no length limit.
+    </div>
+
+    <h2>Edit Profile {{ profile_user.username }}</h2>
+
+    <form method="POST"
+          action="{{ url_for('edit_profile', user_id=profile_user.id) }}">
+
+        <label for="bio">Bio</label>
+        <!-- [V5] No maxlength; accepts HTML/script content -->
+        <textarea id="bio" name="bio"
+                  placeholder="Write anything...">{{ profile_user.bio }}</textarea>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        &nbsp;
+        <a href="{{ url_for('profile', user_id=profile_user.id) }}"
+           class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

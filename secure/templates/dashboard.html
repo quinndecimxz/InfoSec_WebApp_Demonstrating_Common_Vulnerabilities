@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Dashboard for SecureApp{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Dashboard</h2>
+    <p>Welcome back, <strong>{{ user.username }}</strong>
+        &nbsp;<span class="badge {% if user.role == 'admin' %}badge-admin{% else %}badge-user{% endif %}">
+            {{ user.role }}
+        </span>
+    </p>
+</div>
+
+<div class="card">
+    <h3>Quick Actions</h3>
+    <ul style="list-style:none; line-height:2.2;">
+        <li>
+            <a href="{{ url_for('profile', user_id=session.user_id) }}" class="btn btn-secondary">
+                My Profile
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('search') }}" class="btn btn-secondary">
+                Search Users
+            </a>
+        </li>
+        {% if session.role == 'admin' %}
+        <li>
+            <a href="{{ url_for('admin') }}" class="btn btn-danger">
+                Admin Panel
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</div>
+
+<div class="card">
+    <div class="sec-note">
+        <strong>[M2] IDOR Fixed</strong>
+        Every profile route now asserts that <code>session["user_id"] == user_id</code>
+        before serving content. Visiting <code>/profile/&lt;other_id&gt;</code>
+        as a regular user returns <strong>403 Forbidden</strong>.
+        Admins may view all profiles via the explicit <code>@admin_required</code>
+        decorator which re-queries the DB role on every request.
+    </div>
+</div>
+{% endblock %}

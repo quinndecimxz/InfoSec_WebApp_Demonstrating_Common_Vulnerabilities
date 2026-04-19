@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Search SecureApp{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="sec-note">
+        <strong>[M1] SQL Injection Fixed &amp; [M5] Input validation</strong>
+        The search term is passed as a bound parameter (<code>?</code>) to the
+        LIKE clause. Injected SQL keywords and special characters (%, _, --,
+        UNION, etc.) are treated as literal text. Input is also capped at
+        50 characters server-side.
+    </div>
+
+    <h2>Search Users</h2>
+
+    <form method="GET" action="{{ url_for('search') }}"
+          style="display:flex; gap:10px; margin-bottom:20px;">
+        <!-- [M5] maxlength on the input; server enforces the same limit -->
+        <input type="text" name="q" value="{{ query | e }}"
+               placeholder="Enter a username..."
+               maxlength="50" style="flex:1; margin-bottom:0;">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    {% if error %}
+        <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    {% if query and not error %}
+        <p style="color:#555; margin-bottom:12px;">
+            Results for: <strong>{{ query | e }}</strong>
+            &nbsp;({{ results|length }} found)
+        </p>
+
+        {% if results %}
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th></tr>
+                </thead>
+                <tbody>
+                {% for row in results %}
+                    <tr>
+                        <td>{{ row[0] }}</td>
+                        <td>
+                            {% if session.user_id == row[0] or session.role == 'admin' %}
+                                <a href="{{ url_for('profile', user_id=row[0]) }}">
+                                    {{ row[1] }}
+                                </a>
+                            {% else %}
+                                {{ row[1] }}
+                            {% endif %}
+                        </td>
+                        <td>{{ row[2] }}</td>
+                        <td>
+                            <span class="badge {% if row[3] == 'admin' %}badge-admin{% else %}badge-user{% endif %}">
+                                {{ row[3] }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="color:#888;">No users matched your query.</p>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

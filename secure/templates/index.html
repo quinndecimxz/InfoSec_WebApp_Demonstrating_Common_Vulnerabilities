@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Home for SecureApp{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Welcome to SecureApp</h1>
+    <p style="margin-bottom:16px; color:#555;">
+        This is the <strong>patched, secure</strong> version of the Flask
+        application. It demonstrates mitigations for the five vulnerabilities
+        present in the companion vulnerable version.
+    </p>
+
+    <div class="sec-note">
+        <strong>Mitigations applied in this version:</strong>
+        [M1] Parameterized Queries &nbsp;|&nbsp;
+        [M2] Ownership-checked Access Control &nbsp;|&nbsp;
+        [M3] bcrypt Password Hashing &nbsp;|&nbsp;
+        [M4] Secure Session Configuration &nbsp;|&nbsp;
+        [M5] Input Validation (regex + length limits)
+    </div>
+
+    <h3>Seed Credentials</h3>
+    <table style="width:auto; margin-bottom:16px;">
+        <tr><th>Username</th><th>Password</th><th>Role</th></tr>
+        <tr><td>admin</td><td>admin123</td><td><span class="badge badge-admin">admin</span></td></tr>
+        <tr><td>alice</td><td>password1</td><td><span class="badge badge-user">user</span></td></tr>
+        <tr><td>bob</td><td>password2</td><td><span class="badge badge-user">user</span></td></tr>
+    </table>
+
+    <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
+    &nbsp;
+    <a href="{{ url_for('register') }}" class="btn btn-secondary">Register</a>
+</div>
+{% endblock %}

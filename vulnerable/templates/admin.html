@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel for VulnApp{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="vuln-note">
+        <strong>[V2] Broken Access Control</strong>
+        Access is granted based solely on the <code>role</code> value in the
+        session cookie. Because the secret key is <code>"secret"</code>, an
+        attacker can forge the cookie to set role=admin without any DB check.
+    </div>
+
+    <h2>Admin Panel</h2>
+    <p style="color:#666; margin-bottom:16px;">
+        Logged in as: <strong>{{ session.username }}</strong>
+        &nbsp;<span class="badge badge-admin">admin</span>
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>
+                    <a href="{{ url_for('profile', user_id=user.id) }}">
+                        {{ user.username }}
+                    </a>
+                </td>
+                <td>{{ user.email }}</td>
+                <td>
+                    <span class="badge {% if user.role == 'admin' %}badge-admin{% else %}badge-user{% endif %}">
+                        {{ user.role }}
+                    </span>
+                </td>
+                <td>
+                    <!--
+                        [V5] No CSRF token , any page can embed
+                        <img src="/admin/delete/2"> to silently delete a user
+                        when an admin browses to it (CSRF attack).
+                    -->
+                    {% if user.id != session.user_id %}
+                        <a href="{{ url_for('admin_delete', user_id=user.id) }}"
+                           class="btn btn-danger"
+                           onclick="return confirm('Delete {{ user.username }}?')">
+                            Delete
+                        </a>
+                    {% else %}
+                        <span style="color:#aaa; font-size:13px;">(you)</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

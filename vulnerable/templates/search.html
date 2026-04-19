@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Search — VulnApp{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="vuln-note">
+        <strong>[V1] SQL Injection (UNION-based) + [V5] No input validation</strong>
+        The search term is injected into a LIKE clause. Try:
+        <br><code>%' UNION SELECT id, password, username, role, email FROM users --</code>
+        <br>to dump all password hashes from the users table.
+    </div>
+
+    <h2>Search Users</h2>
+
+    <form method="GET" action="{{ url_for('search') }}"
+          style="display:flex; gap:10px; margin-bottom:20px;">
+        <!--
+            [V1] Value passed directly to raw SQL string concatenation
+            [V5] No maxlength, no sanitisation
+        -->
+        <input type="text" name="q" value="{{ query }}"
+               placeholder="Enter a username..."
+               style="flex:1; margin-bottom:0;">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    {% if query %}
+        <p style="color:#555; margin-bottom:12px;">
+            Results for: <strong>{{ query }}</strong>
+            &nbsp;({{ results|length }} found)
+        </p>
+
+        {% if results %}
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th></tr>
+                </thead>
+                <tbody>
+                {% for row in results %}
+                    <tr>
+                        <td>{{ row[0] }}</td>
+                        <td>
+                            <a href="{{ url_for('profile', user_id=row[0]) }}">
+                                {{ row[1] }}
+                            </a>
+                        </td>
+                        <td>{{ row[2] }}</td>
+                        <td>
+                            <span class="badge {% if row[3] == 'admin' %}badge-admin{% else %}badge-user{% endif %}">
+                                {{ row[3] }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="color:#888;">No users matched your query.</p>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

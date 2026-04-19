@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Login  VulnApp{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:420px; margin:40px auto;">
+    <h2>Login</h2>
+
+    <div class="vuln-note">
+        <strong>[V1] SQL Injection target</strong>
+        Try username: <code>' OR '1'='1' --</code> with any password
+        to bypass authentication.
+    </div>
+
+    {% if error %}
+        <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('login') }}">
+        <label for="username">Username</label>
+        <!-- [V1] This field is injected directly into a raw SQL string -->
+        <input type="text" id="username" name="username"
+               placeholder="Enter username" autocomplete="off">
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password"
+               placeholder="Enter password">
+
+        <button type="submit" class="btn btn-primary" style="width:100%;">
+            Login
+        </button>
+    </form>
+
+    <p style="margin-top:14px; font-size:13px;">
+        No account? <a href="{{ url_for('register') }}">Register</a>
+    </p>
+</div>
+{% endblock %}

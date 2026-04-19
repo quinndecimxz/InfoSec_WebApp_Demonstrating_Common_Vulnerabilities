@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Profile  {{ profile_user.username }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="sec-note">
+        <strong>[M2] IDOR Fixed</strong>
+        This page is only reachable by the profile owner or an admin.
+        Attempting to access another user's profile as a regular user
+        returns <strong>403 Forbidden</strong>. The check happens in
+        <code>app.py</code> before any data is fetched from the database.
+    </div>
+
+    <h2>
+        {{ profile_user.username }}
+        <span class="badge {% if profile_user.role == 'admin' %}badge-admin{% else %}badge-user{% endif %}">
+            {{ profile_user.role }}
+        </span>
+    </h2>
+    <p style="color:#666; margin-bottom:8px;">{{ profile_user.email }}</p>
+
+    <p><strong>Bio:</strong></p>
+    <!--
+        [M5] Bio is stored with a 300-character limit and Jinja2's
+        auto-escaping is active (no |safe filter), preventing stored XSS.
+    -->
+    <p style="background:#f9f9f9; padding:10px; border-radius:4px;">
+        {{ profile_user.bio or "(no bio set)" }}
+    </p>
+
+    <br>
+    {% if session.user_id == profile_user.id or session.role == 'admin' %}
+    <a href="{{ url_for('edit_profile', user_id=profile_user.id) }}"
+       class="btn btn-secondary">
+        Edit Profile
+    </a>
+    &nbsp;
+    {% endif %}
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+        ← Back
+    </a>
+</div>
+
+<div class="card">
+    <h3>Private Notes
+        <span style="font-size:12px; color:#2f9e44; font-weight:normal;">
+            (only visible to you / admin)
+        </span>
+    </h3>
+
+    {% if notes %}
+        <ul style="list-style:none; padding:0;">
+        {% for note in notes %}
+            <li style="padding:10px; border:1px solid #eee; border-radius:4px;
+                        margin-bottom:8px; background:#f6fff8;">
+                {{ note.content }}
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p style="color:#888;">No notes found.</p>
+    {% endif %}
+</div>
+{% endblock %}

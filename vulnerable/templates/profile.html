@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Profile — {{ profile_user.username }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="vuln-note">
+        <strong>[V2] IDOR  No ownership check</strong>
+        This page is visible to any authenticated user regardless of
+        whose profile it is. Change the URL to access any user's data.
+    </div>
+
+    <h2>
+        {{ profile_user.username }}
+        <span class="badge {% if profile_user.role == 'admin' %}badge-admin{% else %}badge-user{% endif %}">
+            {{ profile_user.role }}
+        </span>
+    </h2>
+    <p style="color:#666; margin-bottom:8px;">{{ profile_user.email }}</p>
+
+    <p><strong>Bio:</strong></p>
+    <!--
+        [V5] Stored XSS potential: bio is rendered with |safe if you
+        remove Jinja's auto-escaping. As-is, Jinja escapes by default,
+        but the data was stored unvalidated.
+    -->
+    <p style="background:#f9f9f9; padding:10px; border-radius:4px;">
+        {{ profile_user.bio or "(no bio set)" }}
+    </p>
+
+    <br>
+    <a href="{{ url_for('edit_profile', user_id=profile_user.id) }}"
+       class="btn btn-secondary">
+        Edit Profile
+    </a>
+    &nbsp;
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+        ← Back
+    </a>
+</div>
+
+<div class="card">
+    <h3>Private Notes
+        <span style="font-size:12px; color:#cc0000; font-weight:normal;">
+            (visible to all authenticated users IDOR)
+        </span>
+    </h3>
+
+    {% if notes %}
+        <ul style="list-style:none; padding:0;">
+        {% for note in notes %}
+            <li style="padding:10px; border:1px solid #eee; border-radius:4px;
+                        margin-bottom:8px; background:#fffdf0;">
+                {{ note.content }}
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p style="color:#888;">No notes found.</p>
+    {% endif %}
+</div>
+{% endblock %}

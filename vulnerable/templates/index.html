@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Home  VulnApp{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>Welcome to VulnApp</h1>
+    <p style="margin-bottom:16px; color:#555;">
+        This is an <strong>intentionally vulnerable</strong> Flask application
+        built for an Information Security course. It demonstrates five common
+        web application vulnerabilities.
+    </p>
+
+    <div class="vuln-note">
+        <strong>Vulnerabilities present in this application:</strong>
+        [V1] SQL Injection &nbsp;|&nbsp;
+        [V2] Broken Access Control (IDOR) &nbsp;|&nbsp;
+        [V3] Weak Password Hashing (MD5) &nbsp;|&nbsp;
+        [V4] Session Management Weaknesses &nbsp;|&nbsp;
+        [V5] Improper Input Validation
+    </div>
+
+    <h3>Seed Credentials</h3>
+    <table style="width:auto; margin-bottom:16px;">
+        <tr><th>Username</th><th>Password</th><th>Role</th></tr>
+        <tr><td>admin</td><td>admin123</td><td><span class="badge badge-admin">admin</span></td></tr>
+        <tr><td>alice</td><td>password1</td><td><span class="badge badge-user">user</span></td></tr>
+        <tr><td>bob</td><td>password2</td><td><span class="badge badge-user">user</span></td></tr>
+    </table>
+
+    <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
+    &nbsp;
+    <a href="{{ url_for('register') }}" class="btn btn-secondary">Register</a>
+</div>
+{% endblock %}

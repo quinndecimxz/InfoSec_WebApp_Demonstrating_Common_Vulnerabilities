@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Dashboard for VulnApp{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Dashboard</h2>
+    <p>Welcome back, <strong>{{ user.username }}</strong>
+        &nbsp;<span class="badge {% if user.role == 'admin' %}badge-admin{% else %}badge-user{% endif %}">
+            {{ user.role }}
+        </span>
+    </p>
+</div>
+
+<div class="card">
+    <h3>Quick Actions</h3>
+    <ul style="list-style:none; line-height:2.2;">
+        <li>
+            <a href="{{ url_for('profile', user_id=session.user_id) }}" class="btn btn-secondary">
+                My Profile
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for('search') }}" class="btn btn-secondary">
+                Search Users
+            </a>
+        </li>
+        {% if session.role == 'admin' %}
+        <li>
+            <a href="{{ url_for('admin') }}" class="btn btn-danger">
+                Admin Panel
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</div>
+
+<div class="card">
+    <div class="vuln-note">
+        <strong>[V2] IDOR Try it now:</strong>
+        You are user <strong>id={{ session.user_id }}</strong>.
+        Change the URL to <code>/profile/1</code>, <code>/profile/2</code>, or
+        <code>/profile/3</code> to read other users' private notes without any
+        authorisation check.
+    </div>
+</div>
+{% endblock %}
